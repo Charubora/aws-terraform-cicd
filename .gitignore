@@ -1,0 +1,42 @@
+# .gitignore
+# These files should NEVER be pushed to GitHub
+# .terraform folder contains downloaded providers (large files)
+# terraform.tfstate contains your infrastructure state — keep private
+# .tfvars files may contain secrets
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# AWS credentials — NEVER commit these
+.aws/
+credentials
+*.pem
+*.key
+
+# Environment variables
+.env
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
