@@ -1,5 +1,3 @@
-# testing pipeline
-
 # main.tf
 
 # VPC
@@ -158,10 +156,10 @@ resource "aws_instance" "web" {
 
   user_data = <<-EOF
     #!/bin/bash
-    yum update -y
-    yum install -y docker
+    apt-get update -y
+    apt-get install -y docker.io
     service docker start
-    usermod -a -G docker ec2-user
+    usermod -a -G docker ubuntu
     docker run -d -p 80:5000 --name flask-app python:3.9-slim bash -c "
       pip install flask &&
       cat > /app.py << 'PYEOF'
@@ -170,7 +168,44 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return '<h1>DevOps Stack - v1.0</h1><p>Deployed via Terraform + GitHub Actions</p>'
+    return '''<!DOCTYPE html>
+<html>
+<head>
+    <title>Charu Bora - DevOps Portfolio</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 60px auto; padding: 0 20px; background: #f5f5f5; }
+        .card { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h1 { color: #1a1a1a; margin-bottom: 4px; }
+        .subtitle { color: #666; margin-bottom: 30px; }
+        .badge { display: inline-block; background: #e8f4fd; color: #1565c0; padding: 4px 12px; border-radius: 20px; font-size: 13px; margin: 4px; }
+        .section { margin-top: 24px; }
+        .section h3 { color: #333; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        .status { color: #2e7d32; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Charu Bora</h1>
+        <p class="subtitle">DevOps and Cloud Engineer</p>
+        <p><span class="status">&#x2714; Live</span> - Infrastructure deployed via Terraform + GitHub Actions CI/CD</p>
+        <div class="section">
+            <h3>Stack</h3>
+            <span class="badge">AWS EC2</span>
+            <span class="badge">VPC</span>
+            <span class="badge">S3</span>
+            <span class="badge">IAM</span>
+            <span class="badge">Terraform</span>
+            <span class="badge">GitHub Actions</span>
+            <span class="badge">Docker</span>
+            <span class="badge">Python Flask</span>
+        </div>
+        <div class="section">
+            <h3>Architecture</h3>
+            <p>Multi-tier AWS infrastructure with public/private subnets, EC2 running Dockerized Flask app, S3 remote Terraform state with DynamoDB locking, and automated CI/CD with production approval gate.</p>
+        </div>
+    </div>
+</body>
+</html>'''
 
 @app.route('/health')
 def health():
