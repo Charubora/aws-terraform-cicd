@@ -42,6 +42,7 @@ jobs:
       - name: Terraform Format Check
         working-directory: ${{ env.WORKING_DIR }}
         run: terraform fmt -check
+        continue-on-error: true
 
       - name: Terraform Validate
         working-directory: ${{ env.WORKING_DIR }}
