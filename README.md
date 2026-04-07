@@ -1,5 +1,6 @@
 # aws-terraform-cicd
 
+**Live:** http://13.200.87.193/
 Multi-tier AWS infrastructure provisioned with Terraform and automated via GitHub Actions CI/CD pipeline.
 
 ## What this provisions
