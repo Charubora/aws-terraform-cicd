@@ -15,14 +15,14 @@ output "private_subnet_id" {
   value       = aws_subnet.private.id
 }
 
-output "ec2_public_ip" {
-  description = "EC2 public IP"
-  value       = aws_instance.web.public_ip
-}
-
 output "ec2_instance_id" {
   description = "EC2 instance ID"
   value       = aws_instance.web.id
+}
+
+output "elastic_ip" {
+  description = "Static Elastic IP - this never changes"
+  value       = aws_eip.web.public_ip
 }
 
 output "s3_bucket_name" {
@@ -31,6 +31,6 @@ output "s3_bucket_name" {
 }
 
 output "app_url" {
-  description = "Flask app URL"
-  value       = "http://${aws_instance.web.public_ip}"
+  description = "Flask app URL - static, never changes"
+  value       = "http://${aws_eip.web.public_ip}"
 }
