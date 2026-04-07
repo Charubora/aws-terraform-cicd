@@ -152,7 +152,8 @@ resource "aws_instance" "web" {
   instance_type          = var.instance_type
   subnet_id              = aws_subnet.public.id
   vpc_security_group_ids = [aws_security_group.ec2.id]
-  iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
+  iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
+  user_data_replace_on_change = true
 
   user_data = base64encode(<<-EOF
 #!/bin/bash
@@ -218,6 +219,7 @@ PYEOF
 docker run -d -p 80:5000 \
   -v /app.py:/app.py \
   --name flask-app \
+  --restart always \
   python:3.9-slim \
   bash -c "pip install flask && python /app.py"
 EOF
@@ -254,5 +256,16 @@ resource "aws_s3_bucket_versioning" "app_bucket" {
   bucket = aws_s3_bucket.app_bucket.id
   versioning_configuration {
     status = "Enabled"
+  }
+}
+
+# Elastic IP - static public IP that never changes
+resource "aws_eip" "web" {
+  instance = aws_instance.web.id
+  domain   = "vpc"
+
+  tags = {
+    Name        = "${var.project_name}-eip"
+    Environment = var.environment
   }
 }
