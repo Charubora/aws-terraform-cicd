@@ -154,7 +154,6 @@ resource "aws_instance" "web" {
   vpc_security_group_ids = [aws_security_group.ec2.id]
   iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
 
-
   user_data = base64encode(<<-EOF
 #!/bin/bash
 apt-get update -y
