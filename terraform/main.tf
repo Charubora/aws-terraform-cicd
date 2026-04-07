@@ -154,21 +154,20 @@ resource "aws_instance" "web" {
   vpc_security_group_ids = [aws_security_group.ec2.id]
   iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
 
-  user_data = <<-EOF
-    #!/bin/bash
-    apt-get update -y
-    apt-get install -y docker.io
-    service docker start
-    usermod -a -G docker ubuntu
-    docker run -d -p 80:5000 --name flask-app python:3.9-slim bash -c "
-      pip install flask &&
-      cat > /app.py << 'PYEOF'
+  user_data = base64encode(<<-EOF
+#!/bin/bash
+apt-get update -y
+apt-get install -y docker.io
+service docker start
+usermod -a -G docker ubuntu
+
+cat > /app.py << 'PYEOF'
 from flask import Flask
 app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return '''<!DOCTYPE html>
+    html = """<!DOCTYPE html>
 <html>
 <head>
     <title>Charu Bora - DevOps Portfolio</title>
@@ -187,7 +186,7 @@ def home():
     <div class="card">
         <h1>Charu Bora</h1>
         <p class="subtitle">DevOps and Cloud Engineer</p>
-        <p><span class="status">&#x2714; Live</span> - Infrastructure deployed via Terraform + GitHub Actions CI/CD</p>
+        <p><span class="status">&#x2714; Live</span> - Deployed via Terraform and GitHub Actions CI/CD</p>
         <div class="section">
             <h3>Stack</h3>
             <span class="badge">AWS EC2</span>
@@ -205,7 +204,8 @@ def home():
         </div>
     </div>
 </body>
-</html>'''
+</html>"""
+    return html
 
 @app.route('/health')
 def health():
@@ -214,9 +214,14 @@ def health():
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
 PYEOF
-      python /app.py
-    "
-  EOF
+
+docker run -d -p 80:5000 \
+  -v /app.py:/app.py \
+  --name flask-app \
+  python:3.9-slim \
+  bash -c "pip install flask && python /app.py"
+EOF
+)
 
   tags = {
     Name        = "${var.project_name}-web-server"
